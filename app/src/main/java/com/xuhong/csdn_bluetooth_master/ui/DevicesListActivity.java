@@ -18,14 +18,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xuhong.csdn_bluetooth_master.R;
+import com.xuhong.csdn_bluetooth_master.RippleView;
 import com.xuhong.csdn_bluetooth_master.adapter.DeviceListAdapter;
 
 
 public class DevicesListActivity extends BaseActivity implements View.OnClickListener {
 
     //ui
-    private ProgressBar mProgressBar;
-    private TextView tvScan;
+    private TextView tvShowProgress;
 
 
     private DeviceListAdapter mLeDeviceListAdapter;
@@ -54,10 +54,14 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
             finish();
         }
 
+        Log.e("BaseActivity","mBluetoothAdapter.isEnabled():"+mBluetoothAdapter.isEnabled());
         // 检测蓝牙设备是否开启，如果未开启，发起Intent并回调
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, CODE_REQUEST_OPENBT);
+        }else {
+            registerReceiver();
+            mBluetoothAdapter.startDiscovery();
         }
 
 
@@ -65,18 +69,27 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
 
     private void initView() {
 
-        final com.xuhong.csdn_bluetooth_master.RippleView radarView= (com.xuhong.csdn_bluetooth_master.RippleView) findViewById(R.id.content);
+        tvShowProgress= (TextView) findViewById(R.id.tvShowProgress);
 
+
+        final com.xuhong.csdn_bluetooth_master.RippleView radarView= (com.xuhong.csdn_bluetooth_master.RippleView) findViewById(R.id.content);
+        radarView.startRippleAnimation();
+        radarView.setAnimationProgressListener(new RippleView.AnimationProgressListener() {
+            @Override
+            public void updataProgress(int progress) {
+                tvShowProgress.setText(progress+"%");
+            }
+        });
         //开始动画
         ImageView imageView=(ImageView)findViewById(R.id.centerImage);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //停止动画
-                radarView.startRippleAnimation();
+                radarView.stopRippleAnimation();
+                mBluetoothAdapter.cancelDiscovery();
             }
         }); }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -94,7 +107,6 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -102,5 +114,14 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
+    @Override
+    protected void getBTDevices(BluetoothDevice device) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver();
+    }
 }

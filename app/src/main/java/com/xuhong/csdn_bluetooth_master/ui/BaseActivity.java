@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -30,6 +29,7 @@ public class BaseActivity extends AppCompatActivity {
     //注册广播接收器
 
     protected void registerReceiver() {
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);//蓝牙状态改变
         filter.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);//蓝牙扫描状态(SCAN_MODE)发生改变
@@ -44,12 +44,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     //注销广播
-    private void unregisterReceiver() {
+    protected void unregisterReceiver() {
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
     }
-
 
     /**
      * 广播接收器接收返回的蓝牙信息
@@ -63,6 +62,7 @@ public class BaseActivity extends AppCompatActivity {
             //未配对的设备
             if (Objects.equals(BluetoothDevice.ACTION_FOUND, action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                getBTDevices(device);
             }
 
             if (Objects.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED, action)) {
@@ -97,11 +97,10 @@ public class BaseActivity extends AppCompatActivity {
                         break;
                 }
             }
-
-
         }
     };
 
+    protected void getBTDevices(BluetoothDevice device){}
 
 
 }

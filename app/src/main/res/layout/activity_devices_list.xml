@@ -26,15 +26,26 @@
         android:textColor="@android:color/black" />
 
     <com.xuhong.csdn_bluetooth_master.RippleView
-            android:id="@+id/content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <ImageView
-                android:id="@+id/centerImage"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_centerInParent="true"
-                android:background="@drawable/ic_search" />
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/centerImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/ic_search" />
+
+        <TextView
+            android:layout_marginTop="15sp"
+            android:textSize="18sp"
+            android:id="@+id/tvShowProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/centerImage"
+            android:layout_centerHorizontal="true"
+            android:text="点击搜索" />
 
     </com.xuhong.csdn_bluetooth_master.RippleView>
 
