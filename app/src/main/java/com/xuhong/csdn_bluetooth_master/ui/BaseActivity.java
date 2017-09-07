@@ -27,11 +27,9 @@ public class BaseActivity extends AppCompatActivity {
     private static final String TAG = "BaseActivity";
 
 
-    /**
-     * 注册广播接收器
-     */
+    //注册广播接收器
+
     protected void registerReceiver() {
-        Log.e(TAG,"注册广播");
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);//蓝牙状态改变
         filter.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);//蓝牙扫描状态(SCAN_MODE)发生改变
@@ -45,7 +43,7 @@ public class BaseActivity extends AppCompatActivity {
         registerReceiver(mReceiver, filter);
     }
 
-
+    //注销广播
     private void unregisterReceiver() {
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);

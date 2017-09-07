@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/ic_gb"
@@ -24,32 +25,17 @@
         android:text="请打开智能蓝牙灯，确保蓝牙灯在闪烁中.."
         android:textColor="@android:color/black" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ListView
-            android:id="@+id/mListView"
+    <com.xuhong.csdn_bluetooth_master.RippleView
+            android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="invisible" />
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/centerImage"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/ic_search" />
 
-
-        <ProgressBar
-            android:id="@+id/mProgressBar"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:layout_gravity="center"
-            android:scrollbarSize="10dp"
-            android:visibility="invisible" />
-
-        <TextView
-            android:id="@+id/tvScan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="点击开始搜索" />
-    </FrameLayout>
-
+    </com.xuhong.csdn_bluetooth_master.RippleView>
 
 </LinearLayout>

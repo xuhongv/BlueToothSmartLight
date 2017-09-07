@@ -1,5 +1,7 @@
 package com.xuhong.csdn_bluetooth_master.ui;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -10,12 +12,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xuhong.csdn_bluetooth_master.R;
 import com.xuhong.csdn_bluetooth_master.adapter.DeviceListAdapter;
+
 
 public class DevicesListActivity extends BaseActivity implements View.OnClickListener {
 
@@ -29,8 +33,8 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
     // 蓝牙适配器
     private BluetoothAdapter mBluetoothAdapter;
 
-
     private static final int CODE_REQUEST_OPENBT = 101;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +50,7 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (mBluetoothAdapter == null) {
-            Toast.makeText(this,"您的设备不支持蓝牙功能",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "您的设备不支持蓝牙功能", Toast.LENGTH_SHORT).show();
             finish();
         }
 
@@ -60,10 +64,18 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void initView() {
-        tvScan = (TextView) findViewById(R.id.tvScan);
-        tvScan.setOnClickListener(this);
-        mProgressBar = (ProgressBar) findViewById(R.id.mProgressBar);
-    }
+
+        final com.xuhong.csdn_bluetooth_master.RippleView radarView= (com.xuhong.csdn_bluetooth_master.RippleView) findViewById(R.id.content);
+
+        //开始动画
+        ImageView imageView=(ImageView)findViewById(R.id.centerImage);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //停止动画
+                radarView.startRippleAnimation();
+            }
+        }); }
 
 
     @Override
@@ -76,23 +88,19 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
         switch (requestCode) {
             case CODE_REQUEST_OPENBT:
                 if (mBluetoothAdapter.isEnabled()) {
-                   registerReceiver();
+                    registerReceiver();
                 }
                 break;
         }
     }
 
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.tvScan:
-                tvScan.setClickable(false);
-                tvScan.setText("搜索中");
-                mProgressBar.setVisibility(View.VISIBLE);
-                break;
 
         }
     }
+
+
 }
