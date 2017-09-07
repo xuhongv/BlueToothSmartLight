@@ -25,28 +25,43 @@
         android:text="请打开智能蓝牙灯，确保蓝牙灯在闪烁中.."
         android:textColor="@android:color/black" />
 
-    <com.xuhong.csdn_bluetooth_master.RippleView
-        android:id="@+id/content"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/centerImage"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:background="@drawable/ic_search" />
+        <com.xuhong.csdn_bluetooth_master.RippleView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:layout_marginTop="15sp"
-            android:textSize="18sp"
-            android:id="@+id/tvShowProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/centerImage"
-            android:layout_centerHorizontal="true"
-            android:text="点击搜索" />
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/ic_search"
+                android:visibility="invisible" />
 
-    </com.xuhong.csdn_bluetooth_master.RippleView>
+            <TextView
+                android:id="@+id/tvCancle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="25dp"
+                android:gravity="center"
+                android:text="取消扫描"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="18sp" />
+
+        </com.xuhong.csdn_bluetooth_master.RippleView>
+
+        <ListView
+            android:layout_marginTop="30dp"
+            android:visibility="invisible"
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
 
 </LinearLayout>

@@ -6,10 +6,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.os.Handler;
-import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.RelativeLayout;
@@ -30,49 +27,16 @@ public class RippleView extends RelativeLayout {
     private static final int DEFAULT_FILL_TYPE = 0;
 
     private int rippleColor = getResources().getColor(R.color.yellow);
-    private float rippleStrokeWidth = getResources().getDimension(R.dimen.rippleStrokeWidth);
+    private float rippleStrokeWidth = 0;
     private float rippleRadius = getResources().getDimension(R.dimen.rippleRadius);
 
-    private AnimationProgressListener mAnimationProgressListener;
+    private AnimationListener mAnimationProgressListener;
 
     private Paint paint;
     private boolean animationRunning = false;
     private AnimatorSet animatorSet;
-    private ArrayList<Animator> animatorList;
-    private LayoutParams rippleParams;
     private ArrayList<mRipplView> rippleViewList = new ArrayList<>();
 
-
-    private static final int HANDLER_CODE_START = 101;
-    private static final int HANDLER_CODE_PAUSE = 102;
-    //动画时间进度
-    private int AnimationTimeFlag = 0;
-    //动画持续的 时间
-    private boolean isAnimationRunning =true ;
-
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-
-                case HANDLER_CODE_START:
-                    AnimationTimeFlag = AnimationTimeFlag + 4;
-                    if (mAnimationProgressListener != null) {
-                        mAnimationProgressListener.updataProgress(AnimationTimeFlag);
-                    }
-                    if (isAnimationRunning&&AnimationTimeFlag<100) {
-                        mHandler.sendEmptyMessageDelayed(HANDLER_CODE_START, 1000);
-                    }
-                    break;
-
-                case HANDLER_CODE_PAUSE:
-                    isAnimationRunning = false;
-                    break;
-
-            }
-        }
-    };
 
     public RippleView(Context context) {
         super(context);
@@ -99,22 +63,16 @@ public class RippleView extends RelativeLayout {
         int rippleDelay = rippleDurationTime / rippleAmount;
         paint = new Paint();
         paint.setAntiAlias(true);
-        int rippleType = 0;
-
-        if (rippleType == DEFAULT_FILL_TYPE) {
-            rippleStrokeWidth = 0;
-            paint.setStyle(Paint.Style.FILL);
-        } else
-            paint.setStyle(Paint.Style.STROKE);
+        paint.setStyle(Paint.Style.FILL);
         paint.setColor(rippleColor);
 
-        rippleParams = new LayoutParams((int) (2 * (rippleRadius + rippleStrokeWidth)), (int) (2 * (rippleRadius + rippleStrokeWidth)));
+        LayoutParams rippleParams = new LayoutParams((int) (2 * (rippleRadius + rippleStrokeWidth)), (int) (2 * (rippleRadius + rippleStrokeWidth)));
         rippleParams.addRule(CENTER_IN_PARENT, TRUE);
 
         animatorSet = new AnimatorSet();
         animatorSet.setDuration(rippleDurationTime);
         animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
-        animatorList = new ArrayList<>();
+        ArrayList<Animator> animatorList = new ArrayList<>();
 
         for (int i = 0; i < rippleAmount; i++) {
 
@@ -146,19 +104,21 @@ public class RippleView extends RelativeLayout {
         animatorSet.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
-                mHandler.sendEmptyMessageDelayed(HANDLER_CODE_START, 1000);
-                Log.e("==w", "onAnimationStart");
+                if (mAnimationProgressListener!=null){
+                    mAnimationProgressListener.startAnimation();
+                }
             }
 
             @Override
             public void onAnimationEnd(Animator animator) {
-                mHandler.sendEmptyMessage(HANDLER_CODE_PAUSE);
-                Log.e("==w", "onAnimationEnd");
+                if (mAnimationProgressListener!=null){
+                    mAnimationProgressListener.EndAnimation();
+                }
             }
 
             @Override
             public void onAnimationCancel(Animator animator) {
-                Log.e("==w", "onAnimationCancel");
+
             }
 
             @Override
@@ -204,11 +164,12 @@ public class RippleView extends RelativeLayout {
         return animationRunning;
     }
 
-    public interface AnimationProgressListener {
-        void updataProgress(int progress);
+    public interface AnimationListener {
+        void startAnimation();
+        void EndAnimation();
     }
 
-    public void setAnimationProgressListener(AnimationProgressListener mAnimationProgressListener) {
+    public void setAnimationProgressListener(AnimationListener mAnimationProgressListener) {
         this.mAnimationProgressListener = mAnimationProgressListener;
     }
 

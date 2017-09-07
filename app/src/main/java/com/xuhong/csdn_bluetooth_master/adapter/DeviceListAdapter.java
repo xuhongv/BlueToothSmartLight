@@ -1,8 +1,17 @@
 package com.xuhong.csdn_bluetooth_master.adapter;
 
+import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.xuhong.csdn_bluetooth_master.R;
+
+import java.util.List;
 
 /**
  * 项目名： CSDN_BlueTooth-master
@@ -13,25 +22,48 @@ import android.widget.BaseAdapter;
  * 描述： TODO
  */
 
-public class DeviceListAdapter extends BaseAdapter{
+public class DeviceListAdapter extends BaseAdapter {
+
+    private List<BluetoothDevice> list;
+
+    private LayoutInflater layoutInflater;
+
+    public DeviceListAdapter(Context mContext, List<BluetoothDevice> list) {
+        layoutInflater = (LayoutInflater) mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
+        this.list = list;
+    }
 
     @Override
     public int getCount() {
-        return 0;
+        return list.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return null;
+        return list.get(i);
     }
 
     @Override
     public long getItemId(int i) {
-        return 0;
+        return i;
     }
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        return null;
+        ViewHoler viewHoler;
+        if (view == null) {
+            viewHoler = new ViewHoler();
+            view = layoutInflater.inflate(R.layout.item_devices, null);
+            viewHoler.tvName = view.findViewById(R.id.tvName);
+            view.setTag(viewHoler);
+        } else {
+            viewHoler = (ViewHoler) view.getTag();
+        }
+        viewHoler.tvName.setText(list.get(i).getName());
+        return view;
+    }
+
+    private class ViewHoler {
+        TextView tvName;
     }
 }
