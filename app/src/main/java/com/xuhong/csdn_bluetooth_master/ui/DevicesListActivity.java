@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,12 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 
 public class DevicesListActivity extends BaseActivity implements View.OnClickListener {
 
     //ui
     private TextView tvInf, tvCancle;
-    private ImageView imageView;
+    private ImageView imageView ;
+    private LinearLayout iVNull;
     private ListView listview;
     private ProgressDialog progressDialog;
 
@@ -55,11 +60,14 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
 
     private RippleView radarView;
 
+    private Context mContext;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices_list);
+        mContext=this;
         initView();
         intData();
     }
@@ -95,6 +103,8 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
         tvCancle.setOnClickListener(this);
         radarView = (RippleView) findViewById(R.id.content);
         imageView = (ImageView) findViewById(R.id.imageView);
+        iVNull = (LinearLayout) findViewById(R.id.iVNull);
+        iVNull.setOnClickListener(this);
         listview = (ListView) findViewById(R.id.listview);
         mLeDeviceListAdapter = new DeviceListAdapter(this, mBluetoothDeviceList);
         listview.setAdapter(mLeDeviceListAdapter);
@@ -143,6 +153,10 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
                 mBluetoothAdapter.cancelDiscovery();
                 Toast.makeText(DevicesListActivity.this, "取消扫描成功！", Toast.LENGTH_LONG).show();
                 break;
+
+            case R.id.iVNull:
+                intData();
+                break;
         }
     }
 
@@ -155,9 +169,11 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
                     //if (device.getName().contains("Light")) {
                         mBluetoothDeviceList.add(device);
                         mLeDeviceListAdapter.notifyDataSetChanged();
-                        tvInf.setText("恭喜，已找到了" + mBluetoothDeviceList.size() + "个蓝牙灯了！");
                    // }
                 }
+            }
+            if (mBluetoothDeviceList.size()>0){
+                tvInf.setText("恭喜，已找到了" + mBluetoothDeviceList.size() + "个蓝牙灯了！");
             }
         }
     }
@@ -165,6 +181,9 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void startScanBTDevices() {
         imageView.setVisibility(View.VISIBLE);
+        radarView.setVisibility(View.VISIBLE);
+        iVNull.setVisibility(View.INVISIBLE);
+        tvCancle.setVisibility(View.VISIBLE);
         radarView.startRippleAnimation();
         tvInf.setText("正在寻找蓝牙灯设备，耐心等待...");
     }
@@ -175,6 +194,20 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
         unregisterReceiver();
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver();
+        mLeDeviceListAdapter.notifyDataSetChanged();
+    }
+    @Override
+    protected void disableBTDevices() {
+        if (!mBluetoothAdapter.isEnabled()){
+            mBluetoothDeviceList.clear();
+            listview.setVisibility(View.INVISIBLE);
+            iVNull.setVisibility(View.VISIBLE);
+            tvInf.setText("找不到蓝牙设备数据！");
+        }
+    }
 }
 

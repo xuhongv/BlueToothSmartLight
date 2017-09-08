@@ -76,6 +76,7 @@ public class BaseActivity extends AppCompatActivity {
 
             //断开连接的广播
             if (Objects.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED, action)) {
+                disableBTDevices();
                 Log.d(TAG, "断开连接的广播");
             }
 
@@ -115,7 +116,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void succeedBindBTDevices() {
     }
 
-    protected void failBindBTDevices() {
+    protected void disableBTDevices() {
     }
 
 

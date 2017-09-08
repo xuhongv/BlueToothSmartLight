@@ -56,11 +56,35 @@
         </com.xuhong.csdn_bluetooth_master.RippleView>
 
         <ListView
-            android:layout_marginTop="30dp"
-            android:visibility="invisible"
             android:id="@+id/listview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:visibility="invisible"
+            android:id="@+id/iVNull"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_failconnect" />
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="点我重试" />
+
+        </LinearLayout>
+
     </RelativeLayout>
 
 

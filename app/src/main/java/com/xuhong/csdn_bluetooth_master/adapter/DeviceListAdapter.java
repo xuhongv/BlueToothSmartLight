@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xuhong.csdn_bluetooth_master.R;
+import com.xuhong.csdn_bluetooth_master.other.ShareUtils;
 
 import java.util.List;
 
@@ -28,7 +29,10 @@ public class DeviceListAdapter extends BaseAdapter {
 
     private LayoutInflater layoutInflater;
 
+    private Context mContext;
+
     public DeviceListAdapter(Context mContext, List<BluetoothDevice> list) {
+        this.mContext = mContext;
         layoutInflater = (LayoutInflater) mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
         this.list = list;
     }
@@ -59,7 +63,11 @@ public class DeviceListAdapter extends BaseAdapter {
         } else {
             viewHoler = (ViewHoler) view.getTag();
         }
-        viewHoler.tvName.setText(list.get(i).getName());
+        if (null == ShareUtils.getString(mContext, list.get(i).getName(), null)) {
+            viewHoler.tvName.setText(list.get(i).getName());
+        } else {
+            viewHoler.tvName.setText(ShareUtils.getString(mContext, list.get(i).getName(), null));
+        }
         return view;
     }
 
