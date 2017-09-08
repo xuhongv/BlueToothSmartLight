@@ -82,7 +82,7 @@ public class BaseActivity extends AppCompatActivity {
 
             //刚刚连接的广播
             if (Objects.equals(BluetoothDevice.ACTION_ACL_CONNECTED, action)) {
-                Log.d(TAG, "连接的广播");
+                Log.d(TAG, "成功连接的广播");
                 succeedBindBTDevices();
             }
 

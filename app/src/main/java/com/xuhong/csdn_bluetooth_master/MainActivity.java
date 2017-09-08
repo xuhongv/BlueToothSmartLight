@@ -23,7 +23,9 @@ import com.xuhong.csdn_bluetooth_master.ui.BaseActivity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -41,8 +43,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private OutputStream mOutS = null;
     private InputStream input = null;
 
+    private boolean isRevices = true;
+
     // uuid
     private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
+
 
     //ui
     private SweetAlertDialog progerssAlertDialog;
@@ -63,23 +68,34 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 
     //协议
-    private Byte sendData;
+    private List<Byte> sendData = new ArrayList<>();
     private static final int HANDLER_SUCCEED = 201;
     private static final int HANDLER_FAIL = 202;
-    private static final int CONNECT_SUCCED = 203;
+    private static final int HANDLER_GET = 203;
     private static final int RECIECE_SUCCED = 204;
+    private String temRevices = null;
 
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case HANDLER_SUCCEED:
+                    Log.e("BaseActivity","HANDLER_SUCCEED");
                     new mThreadRecieve().start();
+                    mHandler.sendEmptyMessageDelayed(HANDLER_GET,1000);
                     progerssAlertDialog.dismiss();
                     break;
                 case HANDLER_FAIL:
                     progerssAlertDialog.dismiss();
-                    showFailAlertDialog("连接失败哦！");
+                    if (isRevices) {
+                        showFailAlertDialog("连接失败哦！");
+                    }
+                    break;
+                case RECIECE_SUCCED:
+                    upadataUI();
+                    break;
+                case HANDLER_GET:
+                    writeStream(sendData.get(8));
                     break;
             }
         }
@@ -117,6 +133,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mSwitch4 = (Switch) findViewById(R.id.mSwitch4);
         mSwitch4.setOnClickListener(this);
 
+        sendData.add((byte) 0x01);
+        sendData.add((byte) 0x02);
+        sendData.add((byte) 0x03);
+        sendData.add((byte) 0x04);
+        sendData.add((byte) 0x05);
+        sendData.add((byte) 0x06);
+        sendData.add((byte) 0x07);
+        sendData.add((byte) 0x08);
+
+
+        sendData.add((byte) 0x09);
+        sendData.add((byte) 0x10);
+        sendData.add((byte) 0x11);
+
         progerssAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.PROGRESS_TYPE);
         progerssAlertDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.yellow));
         progerssAlertDialog.setTitleText("正在连接...");
@@ -143,6 +173,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 new mThread(mBluetoothDevice).start();
             }
         }
+
     }
 
     @Override
@@ -151,7 +182,36 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             //总开关
             case R.id.cbState:
                 if (mCbState.isChecked()) {
-
+                    writeStream(sendData.get(9));
+                } else {
+                    writeStream(sendData.get(10));
+                }
+            case R.id.mSwitch1:
+                if (mSwitch1.isChecked()) {
+                    writeStream(sendData.get(0));
+                } else {
+                    writeStream(sendData.get(1));
+                }
+                break;
+            case R.id.mSwitch2:
+                if (mSwitch2.isChecked()) {
+                    writeStream(sendData.get(2));
+                } else {
+                    writeStream(sendData.get(3));
+                }
+                break;
+            case R.id.mSwitch3:
+                if (mSwitch3.isChecked()) {
+                    writeStream(sendData.get(4));
+                } else {
+                    writeStream(sendData.get(5));
+                }
+                break;
+            case R.id.mSwitch4:
+                if (mSwitch4.isChecked()) {
+                    writeStream(sendData.get(6));
+                } else {
+                    writeStream(sendData.get(7));
                 }
                 break;
         }
@@ -159,7 +219,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     //内部类子线程:开启连接
     private class mThread extends Thread {
-
         private BluetoothDevice bluetoothDevice;
 
         mThread(BluetoothDevice bluetoothDevice) {
@@ -172,7 +231,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             try {
                 mSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuid);
                 mSocket.connect();
-                mOutS = mSocket.getOutputStream();
                 mHandler.sendEmptyMessage(HANDLER_SUCCEED);
             } catch (IOException e) {
                 mHandler.sendEmptyMessage(HANDLER_FAIL);
@@ -181,33 +239,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private class mThreadRecieve extends Thread {
-
-
         @Override
         public void run() {
-
             int bytes;
             byte[] buffer = new byte[1024];
-
+            String s1;
             try {
                 input = mSocket.getInputStream();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             while (true) {
                 try {
                     if ((bytes = input.read(buffer)) > 0) {
                         byte[] buf_data = new byte[bytes];
-
                         for (int i = 0; i < bytes; i++) {
                             buf_data[i] = buffer[i];
                         }
-                        String s1 = bytesToHexString(buffer).toString();
-                        String s = new String(buf_data);
-                        Log.e("==w", "shuju:" + s);
-                        Log.e("==w", "shuju:" + s1);
-                        //handler.sendEmptyMessage(mRecieve_SUCCED);
+                        s1 = bytesToHexString(buf_data);
+                        temRevices = s1;
+                        mHandler.sendEmptyMessage(RECIECE_SUCCED);
+                        s1 = null;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -230,7 +282,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             if (hv.length() < 2) {
                 stringBuilder.append(0);
             }
-            stringBuilder.append(hv.toUpperCase()).append(" ");
+            stringBuilder.append(hv.toUpperCase()).append("");
         }
         return stringBuilder.toString();
     }
@@ -238,7 +290,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void succeedBindBTDevices() {
+        Log.e("BaseActivity","成功连接");
+        isRevices = false;
         mHandler.sendEmptyMessage(HANDLER_SUCCEED);
+    }
+
+    private void writeStream(byte data) {
+        try {
+            if (mOutS == null) {
+                mOutS = mSocket.getOutputStream();
+            }
+            if (mOutS != null) {
+                mOutS.write(data);
+                mOutS.flush();
+                mHandler.sendEmptyMessageDelayed(HANDLER_GET, 2000);
+            }
+        } catch (IOException e) {
+            mHandler.sendEmptyMessage(HANDLER_FAIL);
+        }
     }
 
     @Override
@@ -322,8 +391,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                 break;
             case android.R.id.home:
-                new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
-                        .setTitleText("提示")
+                SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE);
+                sweetAlertDialog.setTitleText("提示")
                         .setContentText("确定要退出控制该设备吗？")
                         .setCancelText("取消")
                         .setConfirmText("确定")
@@ -337,6 +406,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
                                 finish();
                             }
                         })
@@ -357,7 +427,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void disableBTDevices() {
-
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(mContext, SweetAlertDialog.ERROR_TYPE);
         sweetAlertDialog.setTitleText("设备连接已断开");
         sweetAlertDialog.show();
@@ -370,5 +439,54 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         });
     }
 
+    private void upadataUI() {
+        Log.e("==w", "upadataUI:" + temRevices);
+        isRevices = false;
+        switch (temRevices) {
+            case "00":
+                break;
+            case "20":
+                mIVIconLight1.setChecked(true);
+                mSwitch1.setChecked(true);
+                mTvNameLight1.setTextColor(getResources().getColor(R.color.black));
+                break;
+            case "21":
+                mIVIconLight2.setChecked(true);
+                mSwitch2.setChecked(true);
+                mTvNameLight2.setTextColor(getResources().getColor(R.color.black));
+                break;
+            case "22":
+                mIVIconLight3.setChecked(true);
+                mSwitch3.setChecked(true);
+                mTvNameLight3.setTextColor(getResources().getColor(R.color.black));
+                break;
+            case "23":
+                mIVIconLight4.setChecked(true);
+                mSwitch4.setChecked(true);
+                mTvNameLight4.setTextColor(getResources().getColor(R.color.black));
+                break;
+
+            case "24":
+                mIVIconLight1.setChecked(false);
+                mSwitch1.setChecked(false);
+                mTvNameLight1.setTextColor(getResources().getColor(R.color.slategray));
+                break;
+            case "25":
+                mIVIconLight2.setChecked(false);
+                mSwitch2.setChecked(false);
+                mTvNameLight2.setTextColor(getResources().getColor(R.color.slategray));
+                break;
+            case "26":
+                mIVIconLight3.setChecked(false);
+                mSwitch3.setChecked(false);
+                mTvNameLight3.setTextColor(getResources().getColor(R.color.slategray));
+                break;
+            case "27":
+                mIVIconLight4.setChecked(false);
+                mSwitch4.setChecked(false);
+                mTvNameLight4.setTextColor(getResources().getColor(R.color.slategray));
+                break;
+        }
+    }
 
 }

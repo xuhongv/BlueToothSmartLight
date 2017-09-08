@@ -57,7 +57,7 @@
             android:layout_toEndOf="@+id/iVIconLight1"
             android:background="@null"
             android:text="厨房灯"
-            android:textColor="#888"
+            android:textColor="@color/slategray"
             android:textSize="20sp" />
 
         <Switch
@@ -98,7 +98,7 @@
             android:layout_toEndOf="@+id/iVIconLight2"
             android:background="@null"
             android:text="客厅灯"
-            android:textColor="#888"
+            android:textColor="@color/slategray"
             android:textSize="20sp" />
 
         <Switch
@@ -139,7 +139,7 @@
             android:layout_toEndOf="@+id/iVIconLight3"
             android:background="@null"
             android:text="厕所灯"
-            android:textColor="#888"
+            android:textColor="@color/slategray"
             android:textSize="20sp" />
 
         <Switch
@@ -180,7 +180,7 @@
             android:layout_toEndOf="@+id/iVIconLight4"
             android:background="@null"
             android:text="卧室灯"
-            android:textColor="#888"
+            android:textColor="@color/slategray"
             android:textSize="20sp" />
 
         <Switch
