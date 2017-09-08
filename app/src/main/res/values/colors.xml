@@ -4,4 +4,36 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="yellow">#FFC51B</color>
+
+    <color name="white">#FFFFFF</color><!--白色?-->
+    <color name="ivory">#FFFFF0</color><!--象牙色?-->
+    <color name="lightyellow">#FFFFE0</color><!--亮黄色?-->
+    <color name="snow">#FFFAFA</color><!--雪白色?-->
+    <color name="floralwhite">#FFFAF0</color><!--花白色?-->
+    <color name="lemonchiffon">#FFFACD</color><!--柠檬绸色?-->
+    <color name="cornsilk">#FFF8DC</color><!--米绸色?-->
+    <color name="seashell">#FFF5EE</color><!--海贝色?-->
+    <color name="lavenderblush">#FFF0F5</color><!--淡紫红?-->
+    <color name="papayawhip">#FFEFD5</color><!--番木色?-->
+    <color name="blanchedalmond">#FFEBCD</color><!--白杏色?-->
+    <color name="mistyrose">#FFE4E1</color><!--浅玫瑰色?-->
+    <color name="bisque">#FFE4C4</color><!--桔黄色?-->
+    <color name="moccasin">#FFE4B5</color><!--鹿皮色?-->
+    <color name="navajowhite">#FFDEAD</color><!--纳瓦白?-->
+    <color name="peachpuff">#FFDAB9</color><!--桃色?-->
+    <color name="gold">#FFD700</color><!--金色?-->
+    <color name="pink">#FFC0CB</color><!--粉红色?-->
+    <color name="lightpink">#FFB6C1</color><!--亮粉红色?-->
+    <color name="orange">#FFA500</color><!--橙色?-->
+    <color name="lightsalmon">#FFA07A</color><!--亮肉色?-->
+    <color name="darkorange">#FF8C00</color><!--暗桔黄色?-->
+    <color name="coral">#FF7F50</color><!--珊瑚色?-->
+    <color name="hotpink">#FF69B4</color><!--热粉红色?-->
+    <color name="tomato">#FF6347</color><!--西红柿色?-->
+    <color name="slategray">#708090</color><!--灰石色?-->
+    <color name="slategrey">#708090</color><!--灰石色?-->
+    <color name="olivedrab">#6B8E23</color><!--深绿褐色?-->
+    <color name="slateblue">#6A5ACD</color><!--石蓝色?-->
+    <color name="dimgray">#696969</color><!--暗灰色?-->
+    <color name="dimgrey">#696969</color><!--暗灰色?-->
 </resources>
