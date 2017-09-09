@@ -29,6 +29,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/rllone"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginTop="10dp">
@@ -39,14 +40,14 @@
             android:background="@android:color/black" />
 
         <CheckBox
-            android:enabled="false"
             android:id="@+id/iVIconLight1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="15dp"
             android:background="@drawable/selector_light_state"
-            android:button="@null" />
+            android:button="@null"
+            android:enabled="false" />
 
         <TextView
             android:id="@+id/tvNameLight1"
@@ -56,14 +57,14 @@
             android:layout_marginStart="15dp"
             android:layout_toEndOf="@+id/iVIconLight1"
             android:background="@null"
-            android:text="厨房灯"
+            android:text="----"
             android:textColor="@color/slategray"
             android:textSize="20sp" />
 
         <Switch
             android:id="@+id/mSwitch1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp" />
@@ -71,6 +72,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/rllTwo"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginTop="10dp">
@@ -97,14 +99,14 @@
             android:layout_marginStart="15dp"
             android:layout_toEndOf="@+id/iVIconLight2"
             android:background="@null"
-            android:text="客厅灯"
+            android:text="----"
             android:textColor="@color/slategray"
             android:textSize="20sp" />
 
         <Switch
             android:id="@+id/mSwitch2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp" />
@@ -112,6 +114,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/rllthree"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginTop="10dp">
@@ -138,14 +141,14 @@
             android:layout_marginStart="15dp"
             android:layout_toEndOf="@+id/iVIconLight3"
             android:background="@null"
-            android:text="厕所灯"
+            android:text="----"
             android:textColor="@color/slategray"
             android:textSize="20sp" />
 
         <Switch
             android:id="@+id/mSwitch3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp" />
@@ -153,6 +156,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/rllfour"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginTop="10dp">
@@ -179,22 +183,22 @@
             android:layout_marginStart="15dp"
             android:layout_toEndOf="@+id/iVIconLight4"
             android:background="@null"
-            android:text="卧室灯"
+            android:text="----"
             android:textColor="@color/slategray"
             android:textSize="20sp" />
 
         <Switch
             android:id="@+id/mSwitch4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp" />
     </RelativeLayout>
 
     <View
-        android:background="@android:color/black"
         android:layout_width="match_parent"
-        android:layout_height="0.05dp"/>
+        android:layout_height="0.05dp"
+        android:background="@android:color/black" />
 
 </LinearLayout>

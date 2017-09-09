@@ -1,5 +1,6 @@
 package com.xuhong.csdn_bluetooth_master.ui;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -8,10 +9,12 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,53 +24,38 @@ import android.widget.Toast;
 
 import com.xuhong.csdn_bluetooth_master.MainActivity;
 import com.xuhong.csdn_bluetooth_master.R;
-import com.xuhong.csdn_bluetooth_master.RippleView;
+import com.xuhong.csdn_bluetooth_master.view.RippleView;
 import com.xuhong.csdn_bluetooth_master.adapter.DeviceListAdapter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 public class DevicesListActivity extends BaseActivity implements View.OnClickListener {
 
     //ui
     private TextView tvInf, tvCancle;
-    private ImageView imageView ;
+    private ImageView imageView, ivRefresh;
     private LinearLayout iVNull;
     private ListView listview;
-    private ProgressDialog progressDialog;
 
     private DeviceListAdapter mLeDeviceListAdapter;
     private List<BluetoothDevice> mBluetoothDeviceList = new ArrayList<>();
-
-    // uuid
-    private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
-
     // 蓝牙适配器
     private BluetoothAdapter mBluetoothAdapter;
-    //创建socket
-    private BluetoothSocket mSocket = null;
     //要传出下个界面的蓝牙对象
     private BluetoothDevice tempBluetoothDevice;
 
     private static final int CODE_REQUEST_OPENBT = 101;
-    private static final int HANDLER_FAIL = 102;
-    private static final int HANDLER_SUCCEED = 103;
-
     private RippleView radarView;
 
-    private Context mContext;
-
+    private Animation anim;
+    private RotateAnimation rotateAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_devices_list);
-        mContext=this;
         initView();
         intData();
     }
@@ -90,19 +78,40 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
             registerReceiver();
         }
 
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage("您关闭了蓝牙功能！");
 
     }
 
     private void initView() {
+        rotateAnimation = new RotateAnimation(0, 365, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setRepeatCount(ObjectAnimator.INFINITE);
+        rotateAnimation.setRepeatMode(ObjectAnimator.INFINITE);
+        rotateAnimation.setDuration(2000);
+        rotateAnimation.setFillAfter(false);
 
         tvInf = (TextView) findViewById(R.id.tvInf);
         tvCancle = (TextView) findViewById(R.id.tvCancle);
         tvCancle.setOnClickListener(this);
         radarView = (RippleView) findViewById(R.id.content);
+        radarView.setAnimationProgressListener(new RippleView.AnimationListener() {
+            @Override
+            public void startAnimation() {
+
+            }
+
+            @Override
+            public void EndAnimation() {
+
+                tvCancle.setVisibility(View.INVISIBLE);
+                radarView.setVisibility(View.INVISIBLE);
+                imageView.setVisibility(View.INVISIBLE);
+                listview.setVisibility(View.VISIBLE);
+                ivRefresh.clearAnimation();
+            }
+        });
+
         imageView = (ImageView) findViewById(R.id.imageView);
+        ivRefresh = (ImageView) findViewById(R.id.ivRefresh);
+        ivRefresh.setOnClickListener(this);
         iVNull = (LinearLayout) findViewById(R.id.iVNull);
         iVNull.setOnClickListener(this);
         listview = (ListView) findViewById(R.id.listview);
@@ -126,15 +135,13 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //如果用户拒绝了蓝牙开启，则退出程序
-        if (resultCode == Activity.RESULT_CANCELED) {
-            finish();
-        }
         switch (requestCode) {
             case CODE_REQUEST_OPENBT:
                 if (mBluetoothAdapter.isEnabled()) {
                     mBluetoothAdapter.startDiscovery();
                     registerReceiver();
+                } else {
+                    Toast.makeText(DevicesListActivity.this, "您拒绝了开启蓝牙！点击重试吧！", Toast.LENGTH_LONG).show();
                 }
                 break;
         }
@@ -145,16 +152,17 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
         switch (view.getId()) {
             //取消扫描
             case R.id.tvCancle:
-                tvCancle.setVisibility(View.INVISIBLE);
-                radarView.setVisibility(View.INVISIBLE);
-                imageView.setVisibility(View.INVISIBLE);
-                listview.setVisibility(View.VISIBLE);
-                radarView.stopRippleAnimation();
                 mBluetoothAdapter.cancelDiscovery();
-                Toast.makeText(DevicesListActivity.this, "取消扫描成功！", Toast.LENGTH_LONG).show();
                 break;
-
             case R.id.iVNull:
+                intData();
+                break;
+            //刷新按钮
+            case R.id.ivRefresh:
+                mBluetoothDeviceList.clear();
+                listview.setVisibility(View.INVISIBLE);
+                ivRefresh.startAnimation(rotateAnimation);
+                radarView.startRippleAnimation();
                 intData();
                 break;
         }
@@ -166,13 +174,14 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
         if (device != null) {
             if (!mBluetoothDeviceList.contains(device)) {
                 if (device.getName() != null) {
-                    //if (device.getName().contains("Light")) {
-                        mBluetoothDeviceList.add(device);
-                        mLeDeviceListAdapter.notifyDataSetChanged();
-                   // }
+                    if (device.getName().contains("XuHong")) {
+                    mBluetoothDeviceList.add(device);
+                    mLeDeviceListAdapter.notifyDataSetChanged();
+                    }
                 }
             }
-            if (mBluetoothDeviceList.size()>0){
+            if (mBluetoothDeviceList.size() > 0) {
+                iVNull.setVisibility(View.INVISIBLE);
                 tvInf.setText("恭喜，已找到了" + mBluetoothDeviceList.size() + "个蓝牙灯了！");
             }
         }
@@ -200,13 +209,31 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
         registerReceiver();
         mLeDeviceListAdapter.notifyDataSetChanged();
     }
+
     @Override
     protected void disableBTDevices() {
-        if (!mBluetoothAdapter.isEnabled()){
+        if (!mBluetoothAdapter.isEnabled()) {
             mBluetoothDeviceList.clear();
             listview.setVisibility(View.INVISIBLE);
             iVNull.setVisibility(View.VISIBLE);
-            tvInf.setText("找不到蓝牙设备数据！");
+            tvInf.setText("蓝牙功能未开启！");
+        }
+    }
+
+    @Override
+    protected void stopScanBTDevices() {
+        Toast.makeText(DevicesListActivity.this, "取消扫描成功！", Toast.LENGTH_LONG).show();
+        tvCancle.setVisibility(View.INVISIBLE);
+        radarView.setVisibility(View.INVISIBLE);
+        imageView.setVisibility(View.INVISIBLE);
+        listview.setVisibility(View.VISIBLE);
+        radarView.stopRippleAnimation();
+        if (mBluetoothDeviceList.size()==0){
+            iVNull.setVisibility(View.VISIBLE);
+            ivRefresh.setVisibility(View.INVISIBLE);
+            tvInf.setText("啥都没搜到！");
+        }else {
+            ivRefresh.setVisibility(View.VISIBLE);
         }
     }
 }

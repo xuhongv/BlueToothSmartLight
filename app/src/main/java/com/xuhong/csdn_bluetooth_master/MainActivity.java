@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,25 +32,23 @@ import java.util.UUID;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
 
 
     //要传出下个界面的蓝牙对象
     private BluetoothDevice mBluetoothDevice;
     //创建socket
     private BluetoothSocket mSocket = null;
-
     //io流
     private OutputStream mOutS = null;
     private InputStream input = null;
-
     private boolean isRevices = true;
 
     // uuid
     private static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
 
-
     //ui
+    private RelativeLayout rllOne, rllTwo, rllThree, rllFour;
     private SweetAlertDialog progerssAlertDialog;
     private Context mContext;
     private CheckBox mCbState;
@@ -66,6 +65,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private Switch mSwitch3;
     private Switch mSwitch4;
 
+    //灯名字
+    private String LIGHTNAME_ONE;
+    private String LIGHTNAME_TWO;
+    private String LIGHTNAME_THREE;
+    private String LIGHTNAME_FOUR;
 
     //协议
     private List<Byte> sendData = new ArrayList<>();
@@ -80,9 +84,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case HANDLER_SUCCEED:
-                    Log.e("BaseActivity","HANDLER_SUCCEED");
                     new mThreadRecieve().start();
-                    mHandler.sendEmptyMessageDelayed(HANDLER_GET,1000);
+                    mHandler.sendEmptyMessageDelayed(HANDLER_GET,2000);
                     progerssAlertDialog.dismiss();
                     break;
                 case HANDLER_FAIL:
@@ -124,6 +127,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTvNameLight3 = (TextView) findViewById(R.id.tvNameLight3);
         mIVIconLight4 = (CheckBox) findViewById(R.id.iVIconLight4);
         mTvNameLight4 = (TextView) findViewById(R.id.tvNameLight4);
+        rllOne = (RelativeLayout) findViewById(R.id.rllone);
+        rllTwo = (RelativeLayout) findViewById(R.id.rllTwo);
+        rllThree = (RelativeLayout) findViewById(R.id.rllthree);
+        rllFour = (RelativeLayout) findViewById(R.id.rllfour);
+        rllOne.setOnLongClickListener(this);
+        rllTwo.setOnLongClickListener(this);
+        rllThree.setOnLongClickListener(this);
+        rllFour.setOnLongClickListener(this);
+
         mSwitch1 = (Switch) findViewById(R.id.mSwitch1);
         mSwitch1.setOnClickListener(this);
         mSwitch2 = (Switch) findViewById(R.id.mSwitch2);
@@ -133,6 +145,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mSwitch4 = (Switch) findViewById(R.id.mSwitch4);
         mSwitch4.setOnClickListener(this);
 
+
         sendData.add((byte) 0x01);
         sendData.add((byte) 0x02);
         sendData.add((byte) 0x03);
@@ -141,8 +154,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         sendData.add((byte) 0x06);
         sendData.add((byte) 0x07);
         sendData.add((byte) 0x08);
-
-
         sendData.add((byte) 0x09);
         sendData.add((byte) 0x10);
         sendData.add((byte) 0x11);
@@ -165,11 +176,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (bundle != null) {
             mBluetoothDevice = bundle.getParcelable("device");
             if (mBluetoothDevice != null) {
-                if (null == ShareUtils.getString(this, mBluetoothDevice.getName(), null)) {
+                if (null == ShareUtils.getString(this, mBluetoothDevice.getAddress(), null)) {
                     setTitle(mBluetoothDevice.getName());
                 } else {
-                    setTitle(ShareUtils.getString(this, mBluetoothDevice.getName(), null));
+                    setTitle(ShareUtils.getString(this, mBluetoothDevice.getAddress(), null));
                 }
+                LIGHTNAME_ONE = mBluetoothDevice.getAddress() + "ONE";
+                LIGHTNAME_TWO = mBluetoothDevice.getAddress() + "TWO";
+                LIGHTNAME_THREE = mBluetoothDevice.getAddress() + "THREE";
+                LIGHTNAME_FOUR = mBluetoothDevice.getAddress() + "FOUR";
+                getLightName();
                 new mThread(mBluetoothDevice).start();
             }
         }
@@ -182,10 +198,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             //总开关
             case R.id.cbState:
                 if (mCbState.isChecked()) {
-                    writeStream(sendData.get(9));
-                } else {
                     writeStream(sendData.get(10));
+                } else {
+                    writeStream(sendData.get(9));
                 }
+                break;
             case R.id.mSwitch1:
                 if (mSwitch1.isChecked()) {
                     writeStream(sendData.get(0));
@@ -215,6 +232,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        switch (view.getId()) {
+            case R.id.rllone:
+                showRenameDialog(LIGHTNAME_ONE);
+                break;
+            case R.id.rllTwo:
+                showRenameDialog(LIGHTNAME_TWO);
+                break;
+            case R.id.rllthree:
+                showRenameDialog(LIGHTNAME_THREE);
+                break;
+            case R.id.rllfour:
+                showRenameDialog(LIGHTNAME_FOUR);
+                break;
+        }
+        return true;
     }
 
     //内部类子线程:开启连接
@@ -290,21 +326,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void succeedBindBTDevices() {
-        Log.e("BaseActivity","成功连接");
         isRevices = false;
         mHandler.sendEmptyMessage(HANDLER_SUCCEED);
     }
 
     private void writeStream(byte data) {
         try {
-            if (mOutS == null) {
+
+            Log.e("BaseActivity", "成功发送 mOutS：" + mOutS);
+
+            if (mOutS == null && mSocket != null) {
                 mOutS = mSocket.getOutputStream();
             }
+
             if (mOutS != null) {
                 mOutS.write(data);
                 mOutS.flush();
-                mHandler.sendEmptyMessageDelayed(HANDLER_GET, 2000);
             }
+
         } catch (IOException e) {
             mHandler.sendEmptyMessage(HANDLER_FAIL);
         }
@@ -313,6 +352,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        isRevices = false;
         unregisterReceiver();
         new Thread(new Runnable() {
             @Override
@@ -361,34 +401,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 showDevicesDetailInf();
                 break;
             case R.id.menu_rename:
-                View view = getLayoutInflater().inflate(R.layout.dialog_rename, null);
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setView(view);
-                final AlertDialog dialog = builder.show();
-
-                final EditText text = view.findViewById(R.id.rename_et);
-                view.findViewById(R.id.tv_cancel_rename).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
-
-                view.findViewById(R.id.tv_exit_rename).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (text.getText().toString().isEmpty()) {
-                            Toast.makeText(mContext, "输入不能为空", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                            return;
-                        }
-                        ShareUtils.putString(mContext, mBluetoothDevice.getName(), text.getText().toString());
-                        Toast.makeText(mContext, "修改成功！", Toast.LENGTH_SHORT).show();
-                        setTitle(ShareUtils.getString(mContext, mBluetoothDevice.getName(), null));
-                        dialog.dismiss();
-                    }
-                });
-
+                showRenameDialog(mBluetoothDevice.getAddress());
                 break;
             case android.R.id.home:
                 SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE);
@@ -440,10 +453,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void upadataUI() {
-        Log.e("==w", "upadataUI:" + temRevices);
         isRevices = false;
         switch (temRevices) {
             case "00":
+                break;
+            case "28":
+                mCbState.setChecked(false);
+                break;
+            case "29":
+                mCbState.setChecked(true);
                 break;
             case "20":
                 mIVIconLight1.setChecked(true);
@@ -465,7 +483,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mSwitch4.setChecked(true);
                 mTvNameLight4.setTextColor(getResources().getColor(R.color.black));
                 break;
-
             case "24":
                 mIVIconLight1.setChecked(false);
                 mSwitch1.setChecked(false);
@@ -486,6 +503,67 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mSwitch4.setChecked(false);
                 mTvNameLight4.setTextColor(getResources().getColor(R.color.slategray));
                 break;
+        }
+    }
+
+    private void showRenameDialog(final String key) {
+        View view = getLayoutInflater().inflate(R.layout.dialog_rename, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setView(view);
+        final AlertDialog dialog = builder.show();
+
+        final EditText text = view.findViewById(R.id.rename_et);
+        view.findViewById(R.id.tv_cancel_rename).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        view.findViewById(R.id.tv_exit_rename).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (text.getText().toString().isEmpty()) {
+                    Toast.makeText(mContext, "输入不能为空", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    return;
+                }
+                ShareUtils.putString(mContext, key, text.getText().toString());
+                Toast.makeText(mContext, "修改成功！", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                getLightName();
+                setTitle(ShareUtils.getString(mContext, mBluetoothDevice.getAddress(), null));
+
+            }
+        });
+
+    }
+
+    private void getLightName() {
+        String name1 = ShareUtils.getString(mContext, LIGHTNAME_ONE, null);
+        String name2 = ShareUtils.getString(mContext, LIGHTNAME_TWO, null);
+        String name3 = ShareUtils.getString(mContext, LIGHTNAME_THREE, null);
+        String name4 = ShareUtils.getString(mContext, LIGHTNAME_FOUR, null);
+
+        if (name1 != null) {
+            mTvNameLight1.setText(name1);
+        } else {
+            mTvNameLight1.setText("灯一");
+        }
+        if (name2 != null) {
+            mTvNameLight2.setText(name2);
+        } else {
+            mTvNameLight2.setText("灯二");
+        }
+        if (name3 != null) {
+            mTvNameLight3.setText(name3);
+        } else {
+            mTvNameLight3.setText("灯三");
+        }
+        if (name4 != null) {
+            mTvNameLight4.setText(name4);
+        } else {
+            mTvNameLight4.setText("灯四");
         }
     }
 

@@ -14,7 +14,16 @@
         <item name="colorPrimary">@color/yellow</item>
         <item name="colorPrimaryDark">@color/yellow</item>
         <item name="colorAccent">@color/yellow</item>
-
     </style>
+
+
+    <style name="mNoActionFullScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/yellow</item>
+        <item name="colorPrimaryDark">@color/yellow</item>
+        <item name="colorAccent">@color/yellow</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
 
 </resources>

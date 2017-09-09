@@ -6,15 +6,34 @@
     android:background="@mipmap/ic_gb"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+    <RelativeLayout
         android:layout_marginTop="30dp"
-        android:gravity="center"
-        android:text="搜索智能蓝牙灯"
-        android:textColor="@android:color/black"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <TextView
+            android:id="@+id/tvNull"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="搜索智能蓝牙灯"
+            android:textColor="@android:color/black"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:visibility="invisible"
+            android:id="@+id/ivRefresh"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:layout_toStartOf="@+id/tvNull"
+            android:src="@mipmap/iv_refresh" />
+
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/tvInf"
@@ -29,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.xuhong.csdn_bluetooth_master.RippleView
+        <com.xuhong.csdn_bluetooth_master.view.RippleView
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -53,7 +72,7 @@
                 android:textColor="@android:color/holo_red_dark"
                 android:textSize="18sp" />
 
-        </com.xuhong.csdn_bluetooth_master.RippleView>
+        </com.xuhong.csdn_bluetooth_master.view.RippleView>
 
         <ListView
             android:id="@+id/listview"
@@ -63,12 +82,12 @@
             android:visibility="invisible" />
 
         <LinearLayout
-            android:visibility="invisible"
             android:id="@+id/iVNull"
-            android:layout_centerInParent="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:visibility="invisible">
 
             <ImageView
                 android:id="@+id/iv"
@@ -77,10 +96,10 @@
                 android:src="@drawable/ic_failconnect" />
 
             <TextView
-                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:gravity="center"
                 android:text="点我重试" />
 
         </LinearLayout>

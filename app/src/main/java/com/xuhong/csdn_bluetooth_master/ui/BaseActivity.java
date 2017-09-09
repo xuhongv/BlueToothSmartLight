@@ -25,11 +25,8 @@ public class BaseActivity extends AppCompatActivity {
 
     private static final String TAG = "BaseActivity";
 
-
     //注册广播接收器
-
     protected void registerReceiver() {
-        Log.e("BaseActivity", "注册广播接收器");
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);//蓝牙状态改变
         filter.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);//蓝牙扫描状态(SCAN_MODE)发生改变
@@ -39,6 +36,7 @@ public class BaseActivity extends AppCompatActivity {
         filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);//指明一个为远程设备提出的低级别（ACL）的断开连接请求，并即将断开连接。
         filter.addAction(BluetoothDevice.ACTION_FOUND);//发现远程设备
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);//本地蓝牙适配器已经开始对远程设备的搜寻过程。
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);//本地蓝牙适配器已经开始对远程设备的搜寻过程。
         registerReceiver(mReceiver, filter);
     }
 
@@ -73,6 +71,10 @@ public class BaseActivity extends AppCompatActivity {
                 Log.d(TAG, "蓝牙搜索设备的广播");
                 startScanBTDevices();
             }
+            if (Objects.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED, action)) {
+                Log.d(TAG, "蓝牙搜索设备停止的广播");
+                stopScanBTDevices();
+            }
 
             //断开连接的广播
             if (Objects.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED, action)) {
@@ -105,6 +107,8 @@ public class BaseActivity extends AppCompatActivity {
                 }
             }
         }
+
+
     };
 
     protected void getBTDevices(BluetoothDevice device) {
@@ -117,6 +121,9 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void disableBTDevices() {
+    }
+
+    protected void stopScanBTDevices() {
     }
 
 

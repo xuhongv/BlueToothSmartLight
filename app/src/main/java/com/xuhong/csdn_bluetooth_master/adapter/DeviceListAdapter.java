@@ -63,10 +63,10 @@ public class DeviceListAdapter extends BaseAdapter {
         } else {
             viewHoler = (ViewHoler) view.getTag();
         }
-        if (null == ShareUtils.getString(mContext, list.get(i).getName(), null)) {
+        if (null == ShareUtils.getString(mContext, list.get(i).getAddress(), null)) {
             viewHoler.tvName.setText(list.get(i).getName());
         } else {
-            viewHoler.tvName.setText(ShareUtils.getString(mContext, list.get(i).getName(), null));
+            viewHoler.tvName.setText(ShareUtils.getString(mContext, list.get(i).getAddress(), null));
         }
         return view;
     }

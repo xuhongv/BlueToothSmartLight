@@ -1,4 +1,4 @@
-package com.xuhong.csdn_bluetooth_master;
+package com.xuhong.csdn_bluetooth_master.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -10,6 +10,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.RelativeLayout;
+
+import com.xuhong.csdn_bluetooth_master.R;
 
 import java.util.ArrayList;
 
