@@ -21,23 +21,35 @@ import java.util.ArrayList;
  * 文件名：   RippleView
  * 创建者：   xuhong
  * 创建时间： 2017/9/7 10:48
- * 描述：   TODO
+ * 描述：   雷达涟漪的view开发
  */
 
 public class RippleView extends RelativeLayout {
 
-    private static final int DEFAULT_FILL_TYPE = 0;
-
+    //涟漪的颜色
     private int rippleColor = getResources().getColor(R.color.yellow);
+    //最里面涟漪的实心圆
     private float rippleStrokeWidth = 0;
+    //涟漪的半径
     private float rippleRadius = getResources().getDimension(R.dimen.rippleRadius);
-
+    //自定义的动画开始与结束接口
     private AnimationListener mAnimationProgressListener;
-
+    //画笔
     private Paint paint;
+    //动画标志
     private boolean animationRunning = false;
+    //动画集合
     private AnimatorSet animatorSet;
+    //自定义view集合
     private ArrayList<mRipplView> rippleViewList = new ArrayList<>();
+    //每次动画的时间
+    private int rippleDurationTime = 4000;
+    //涟漪条目
+    private int rippleAmount = 4;
+    //每条涟漪依次出现的次数
+    private int rippleDelay;
+    //涟漪从出现到消失的动画次数
+    private int mRepeatCount = 4;
 
 
     public RippleView(Context context) {
@@ -60,9 +72,8 @@ public class RippleView extends RelativeLayout {
 
     private void init() {
 
-        int rippleDurationTime = 4000;
-        int rippleAmount = 4;
-        int rippleDelay = rippleDurationTime / rippleAmount;
+        rippleDelay = rippleDurationTime / rippleAmount;
+        //初始化画笔
         paint = new Paint();
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.FILL);
@@ -72,10 +83,14 @@ public class RippleView extends RelativeLayout {
         rippleParams.addRule(CENTER_IN_PARENT, TRUE);
 
         animatorSet = new AnimatorSet();
+
         animatorSet.setDuration(rippleDurationTime);
+        //加速插值器
         animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
         ArrayList<Animator> animatorList = new ArrayList<>();
 
+
+        //缩放、渐变动画
         for (int i = 0; i < rippleAmount; i++) {
 
             mRipplView rippleView = new mRipplView(getContext());
@@ -84,36 +99,38 @@ public class RippleView extends RelativeLayout {
 
             float rippleScale = 6.0f;
             final ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(rippleView, "ScaleX", 1.0f, rippleScale);
-            scaleXAnimator.setRepeatCount(5);
+            scaleXAnimator.setRepeatCount(mRepeatCount);
             scaleXAnimator.setRepeatMode(ObjectAnimator.RESTART);
             scaleXAnimator.setStartDelay(i * rippleDelay);
             animatorList.add(scaleXAnimator);
 
             final ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(rippleView, "ScaleY", 1.0f, rippleScale);
-            scaleYAnimator.setRepeatCount(5);
+            scaleYAnimator.setRepeatCount(mRepeatCount);
             scaleYAnimator.setRepeatMode(ObjectAnimator.RESTART);
             scaleYAnimator.setStartDelay(i * rippleDelay);
             animatorList.add(scaleYAnimator);
 
             final ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(rippleView, "Alpha", 1.0f, 0f);
-            alphaAnimator.setRepeatCount(5);
+            alphaAnimator.setRepeatCount(mRepeatCount);
             alphaAnimator.setRepeatMode(ObjectAnimator.RESTART);
             alphaAnimator.setStartDelay(i * rippleDelay);
             animatorList.add(alphaAnimator);
 
         }
+        //开始动画
         animatorSet.playTogether(animatorList);
+        //动画的监听
         animatorSet.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
-                if (mAnimationProgressListener!=null){
+                if (mAnimationProgressListener != null) {
                     mAnimationProgressListener.startAnimation();
                 }
             }
 
             @Override
             public void onAnimationEnd(Animator animator) {
-                if (mAnimationProgressListener!=null){
+                if (mAnimationProgressListener != null) {
                     mAnimationProgressListener.EndAnimation();
                 }
             }
@@ -131,20 +148,32 @@ public class RippleView extends RelativeLayout {
     }
 
 
+    //画一个圆
     private class mRipplView extends View {
 
-        public mRipplView(Context context) {
+        mRipplView(Context context) {
             super(context);
             this.setVisibility(View.INVISIBLE);
         }
 
         @Override
         protected void onDraw(Canvas canvas) {
+            //圆的半径，也就是它的父布局宽或高（取最小）的一半
             int radius = (Math.min(getWidth(), getHeight())) / 2;
+            /**
+             * 参数解析：
+             * 圆心的x坐标。
+             * 圆心的y坐标。
+             * 圆的半径。
+             * 绘制时所使用的画笔。
+             */
             canvas.drawCircle(radius, radius, radius - rippleStrokeWidth, paint);
         }
     }
 
+    /**
+     * 对外的开始动画
+     */
     public void startRippleAnimation() {
         if (!isRippleAnimationRunning()) {
             for (mRipplView rippleView : rippleViewList) {
@@ -155,8 +184,15 @@ public class RippleView extends RelativeLayout {
         }
     }
 
+    /**
+     * 对面外的结束动画
+     */
     public void stopRippleAnimation() {
-        if (isRippleAnimationRunning()) {
+
+        if (!isRippleAnimationRunning()) {
+            for (mRipplView rippleView : rippleViewList) {
+                rippleView.setVisibility(INVISIBLE);
+            }
             animatorSet.end();
             animationRunning = false;
         }
@@ -166,8 +202,12 @@ public class RippleView extends RelativeLayout {
         return animationRunning;
     }
 
+    /**
+     * 对外的接口
+     */
     public interface AnimationListener {
         void startAnimation();
+
         void EndAnimation();
     }
 
