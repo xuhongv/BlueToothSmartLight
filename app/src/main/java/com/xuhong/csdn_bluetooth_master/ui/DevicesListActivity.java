@@ -48,8 +48,6 @@ public class DevicesListActivity extends BaseActivity implements View.OnClickLis
 
     private static final int CODE_REQUEST_OPENBT = 101;
     private RippleView radarView;
-
-    private Animation anim;
     private RotateAnimation rotateAnimation;
 
     @Override
