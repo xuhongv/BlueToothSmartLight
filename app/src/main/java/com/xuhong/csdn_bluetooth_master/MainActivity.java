@@ -85,7 +85,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             switch (msg.what) {
                 case HANDLER_SUCCEED:
                     new mThreadRecieve().start();
-                    mHandler.sendEmptyMessageDelayed(HANDLER_GET,2000);
+                    mHandler.sendEmptyMessageDelayed(HANDLER_GET, 2000);
                     progerssAlertDialog.dismiss();
                     break;
                 case HANDLER_FAIL:
@@ -454,15 +454,41 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void upadataUI() {
         isRevices = false;
+        Log.e("BaseActivity", "upadataUI temRevices：" + temRevices);
         switch (temRevices) {
             case "00":
                 break;
             case "28":
                 mCbState.setChecked(false);
+                mIVIconLight1.setChecked(false);
+                mSwitch1.setChecked(false);
+                mTvNameLight1.setTextColor(getResources().getColor(R.color.slategray));
+                mIVIconLight2.setChecked(false);
+                mSwitch2.setChecked(false);
+                mTvNameLight2.setTextColor(getResources().getColor(R.color.slategray));
+                mIVIconLight3.setChecked(false);
+                mSwitch3.setChecked(false);
+                mTvNameLight3.setTextColor(getResources().getColor(R.color.slategray));
+                mIVIconLight4.setChecked(false);
+                mSwitch4.setChecked(false);
+                mTvNameLight4.setTextColor(getResources().getColor(R.color.slategray));
                 break;
             case "29":
                 mCbState.setChecked(true);
+                mIVIconLight1.setChecked(true);
+                mSwitch1.setChecked(true);
+                mTvNameLight1.setTextColor(getResources().getColor(R.color.black));
+                mIVIconLight2.setChecked(true);
+                mSwitch2.setChecked(true);
+                mTvNameLight2.setTextColor(getResources().getColor(R.color.black));
+                mIVIconLight3.setChecked(true);
+                mSwitch3.setChecked(true);
+                mTvNameLight3.setTextColor(getResources().getColor(R.color.black));
+                mIVIconLight4.setChecked(true);
+                mSwitch4.setChecked(true);
+                mTvNameLight4.setTextColor(getResources().getColor(R.color.black));
                 break;
+
             case "20":
                 mIVIconLight1.setChecked(true);
                 mSwitch1.setChecked(true);
@@ -483,6 +509,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 mSwitch4.setChecked(true);
                 mTvNameLight4.setTextColor(getResources().getColor(R.color.black));
                 break;
+
+            //关灯
             case "24":
                 mIVIconLight1.setChecked(false);
                 mSwitch1.setChecked(false);
